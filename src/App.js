@@ -1,28 +1,19 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import Main from './components/main';
+import LogIn from './components/auth/login'
+import { Redirect } from 'react-router'
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
-  }
-}
 
+const App = () => (
+  <Router>
+    <div>
+    	<Route exact path="/" render={() => (
+		    <Redirect to="/login"/>
+		)} />
+    	<Route exact path="/app" component={Main} />
+    	<Route exact path="/login" component={LogIn} />
+    </div>
+  </Router>
+)
 export default App;
