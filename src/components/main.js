@@ -1,8 +1,8 @@
 import React from 'react'
-import '../style/App.css'
-import { FaSearch, FaFile, FaFileImage } from 'react-icons/fa'
+import { FaSearch, FaFile, FaFileImage, FaAngleDown } from 'react-icons/fa'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
+import '../style/main.css'
 
 class Main extends React.Component {
 	constructor(props){
@@ -23,6 +23,13 @@ class Main extends React.Component {
 	render() {
 		return (
 			<div>
+			<div style={{float: 'right'}}>
+				<div className="clearfix">
+		          <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01.jpg" alt="avatar" />
+		          <div className="about">
+		          </div>
+		        </div>
+			</div>
 			  <div className="container clearfix">
 			    <div className="people-list" id="people-list">
 			      <div className="search">
@@ -245,5 +252,5 @@ class Main extends React.Component {
 }
 
 export default withRouter(connect(
-  ({ firebase: { auth } }) => ({ authExists: !auth })
+  ({ firebase: { auth } }) => ({ authExists: !!auth && !!auth.uid })
 )(Main))

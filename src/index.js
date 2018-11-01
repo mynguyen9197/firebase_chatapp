@@ -4,8 +4,8 @@ import App from './App'
 import { Provider } from 'react-redux'
 
 import firebase from 'firebase'
-import { compose, createStore, combineReducers, applyMiddleware } from 'redux'
-import { getFirebase, reactReduxFirebase, firebaseReducer } from 'react-redux-firebase'
+import { compose, createStore, combineReducers } from 'redux'
+import { reactReduxFirebase, firebaseReducer } from 'react-redux-firebase'
 
 // Firebase config
 const fbConfig = {

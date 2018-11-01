@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Main from './components/main';
 import LogIn from './components/auth/login'
 import { Redirect } from 'react-router'
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 
 
 const App = () => (
