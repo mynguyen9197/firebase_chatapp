@@ -1,8 +1,13 @@
 import React from 'react'
-import { FaSearch, FaFile, FaFileImage, FaAngleDown } from 'react-icons/fa'
+import { FaSearch, FaFile, FaFileImage } from 'react-icons/fa'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import '../style/main.css'
+import { UserIsAuthenticated } from '../containers/authContainer'
+import { compose } from 'redux'
+import UserList from './UserList';
+import * as firebase from 'firebase'
+import { firebaseConnect, isLoaded, isEmpty } from 'react-redux-firebase'
 
 class Main extends React.Component {
 	constructor(props){
@@ -10,33 +15,38 @@ class Main extends React.Component {
 		this.state = {
 			time: "",
 			messageOutput: '',
-			response: ''
+			response: '',
+			users: []
 		}
 	}
 
-	componentWillReceiveProps({ authExists }) {
-	    if (authExists) {
-	      this.props.history.push('/login') // redirect to /login if not authed
-	    }
+	componentDidMount(){
 	}
 
 	render() {
+		const { dispatch, users } = this.props;
 		return (
+			<div>
+			{isLoaded(this.props.auth)&&isEmpty(this.props.auth)?this.props.history.push('/login'):
 			<div>
 			<div style={{float: 'right'}}>
 				<div className="clearfix">
-		          <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01.jpg" alt="avatar" />
+		          <img id="ava" src={this.props.profile.avatarUrl} alt="avatar" />
 		          <div className="about">
+		          {this.props.profile.displayName}
 		          </div>
+
 		        </div>
 			</div>
-			  <div className="container clearfix">
+			<div className="container clearfix">
 			    <div className="people-list" id="people-list">
 			      <div className="search">
 			        <span><input type="text" placeholder="search" /></span>
 			        <span><FaSearch className="fa-search" /></span>
 			      </div>
-			      <ul className="list">
+			      
+			      {/*<ul className="list">
+
 			        <li className="clearfix">
 			          <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01.jpg" alt="avatar" />
 			          <div className="about">
@@ -136,7 +146,7 @@ class Main extends React.Component {
 			            </div>
 			          </div>
 			        </li>
-			      </ul>
+			      </ul>*/}
 			    </div>
 			    
 			    <div className="chat">
@@ -211,8 +221,8 @@ class Main extends React.Component {
 			      <div className="chat-message clearfix">
 			        <textarea name="message-to-send" id="message-to-send" placeholder ="Type your message" rows="3"></textarea>
 			                
-			        <FaFile className="fa-file-o" /> &nbsp;&nbsp;&nbsp;
-			        <FaFileImage className="fa-file-image-o" />
+			        <button className="fa-file-o"><FaFile /></button> &nbsp;&nbsp;&nbsp;
+			        <button className="fa-file-image-o"><FaFileImage /></button>
 			        
 			        <button>Send</button>
 
@@ -222,7 +232,7 @@ class Main extends React.Component {
 			    
 			  </div> {/* end container */}
 
-			<script id="message-template" type="text/x-handlebars-template">
+			{/*<script id="message-template" type="text/x-handlebars-template">
 			  <li className="clearfix">
 			    <div className="message-data align-right">
 			      <span className="message-data-time" >{this.state.time}, Today</span> &nbsp; &nbsp;
@@ -244,13 +254,18 @@ class Main extends React.Component {
 			      {this.state.response}
 			    </div>
 			  </li>
-			</script>
+			</script>*/}
+		</div>}
 		</div>
-
 		)
 	}
 }
 
-export default withRouter(connect(
-  ({ firebase: { auth } }) => ({ authExists: !!auth && !!auth.uid })
+export default withRouter(compose(
+  firebaseConnect(), // withFirebase can also be used
+  connect(({ firebase }) => ({ 
+  	auth: firebase.auth, 
+  	profile: firebase.profile
+  }))
 )(Main))
+//export default UserIsAuthenticated(Main)

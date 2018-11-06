@@ -198,9 +198,10 @@ button::hover {
   color: darken(#94C2ED, 7%);
 }
 
-.online, .offline, .me {
+button .online, .offline, .me {
     margin-right: 3px;
     font-size: 10px;
+    float: left;
 }
   
 .online {
@@ -234,4 +235,10 @@ button::hover {
 	content: " ";
 	clear: both;
 	height: 0;
+}
+
+#ava{
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
 }

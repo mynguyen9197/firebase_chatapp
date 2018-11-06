@@ -6,19 +6,20 @@ import { firebaseConnect, isLoaded, isEmpty } from 'react-redux-firebase'
 import { withRouter } from 'react-router-dom'
 import '../../style/login.css'
 import { FaGoogle, FaTwitter, FaFacebook, FaUserEdit, FaUserLock } from 'react-icons/fa'
+import { UserIsNotAuthenticated } from '../../containers/authContainer'
 
 class LoginPage extends React.Component{
 
-  // componentDidMont(){
-  //   if(!isEmpty(this.props.auth))
-  //     this.props.history.push('/app')
-  // }
+  componentDidMount(){
+    if(isLoaded(this.props.auth)&&!isEmpty(this.props.auth))
+      this.props.history.push('/app')
+  }
 
   render(){
   	return (
       <div className="container2">
-      {!isEmpty(this.props.auth)
-            ? this.props.history.push('/app'):
+      {isLoaded(this.props.auth)&&!isEmpty(this.props.auth)?
+          this.props.history.push('/app'):
       <div>
         <div><h1>Login</h1></div><br /><br />
         <form className="form" onSubmit={e => { e.preventDefault(); }}>
@@ -32,7 +33,7 @@ class LoginPage extends React.Component{
             <input className="input100" type="password" name="pass" placeholder="Type your password" />
           </div><br />
           <div style={{float: 'right'}}>
-            <a href="#">
+            <a href="google.com">
               Forgot password?
             </a>
           </div><br /><br />
@@ -63,9 +64,9 @@ class LoginPage extends React.Component{
             </button>
           </div><br /><br />
           </form>
-      </div>
-    }
     </div>
+  }
+  </div>
     )
   }
 }

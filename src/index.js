@@ -3,9 +3,11 @@ import ReactDOM from 'react-dom'
 import App from './App'
 import { Provider } from 'react-redux'
 
-import firebase from 'firebase'
-import { compose, createStore, combineReducers } from 'redux'
-import { reactReduxFirebase, firebaseReducer } from 'react-redux-firebase'
+import { compose, createStore, applyMiddleware } from 'redux'
+import { reactReduxFirebase, getFirebase } from 'react-redux-firebase'
+import thunk from 'redux-thunk'
+import rootReducer from './reducers'
+import * as firebase from 'firebase'
 
 // Firebase config
 const fbConfig = {
@@ -16,35 +18,40 @@ const fbConfig = {
   storageBucket: 'https://chat-app-b0d15.firebaseio.com',
   messagingSenderId: "748929482744"
 }
-// react-redux-firebase options
-const rrfConfig = {
-  userProfile: 'users', // firebase root where user profiles are stored
-  attachAuthIsReady: true, // attaches auth is ready promise to store
-  firebaseStateName: 'firebase' // should match the reducer name ('firebase' is default)
-}
 
 // Initialize firebase instance
 firebase.initializeApp(fbConfig)
 
-// Initialize other services on firebase instance
-// firebase.firestore() // <- needed if using firestore
-// firebase.functions() // <- needed if using httpsCallable
+// react-redux-firebase options
+const rrfConfig = {
+  userProfile: 'users', // firebase root where user profiles are stored
+  profileParamsToPopulate: [
+    'contacts:users'
+  ],
+  attachAuthIsReady: true, // attaches auth is ready promise to store
+  firebaseStateName: 'firebase', // should match the reducer name ('firebase' is default)
+  presence: 'presence', // where list of online users is stored in database
+  sessions: 'sessions' // where list of user sessions is stored in database (presence must be enabled)
+}
+
+
 
 // Add reactReduxFirebase enhancer when making store creator
 const createStoreWithFirebase = compose(
   reactReduxFirebase(firebase, rrfConfig), // firebase instance as first argument
-  // reduxFirestore(firebase) // <- needed if using firestore
+  applyMiddleware(thunk.withExtraArgument(getFirebase))
 )(createStore)
 
 // Add firebase to reducers
-const rootReducer = combineReducers({
-  firebase: firebaseReducer,
-  // firestore: firestoreReducer // <- needed if using firestore
-})
+// const rootReducer = combineReducers({
+//   firebase: firebaseReducer,
+//   // firestore: firestoreReducer // <- needed if using firestore
+// })
 
 // Create store with reducers and initial state
 const initialState = {}
 const store = createStoreWithFirebase(rootReducer, initialState)
+//const store = createStore(rootReducer, applyMiddleware(thunk.withExtraArgument({getFirebase, getFirestore})))
 
 ReactDOM.render(
 	<Provider store={store}>
