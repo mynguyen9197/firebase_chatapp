@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { addConnectedUser } from '../actions/userAction';
+import { addConnectedUser } from '../actions/userActions';
 import '../style/main.css'
-import firebase from 'firebase'
+import * as firebase from 'firebase'
 
 export default class UsersList extends Component {
   componentDidMount() {
@@ -42,18 +42,8 @@ export default class UsersList extends Component {
     const { users } = this.props;
 
     return (
-      <ul className="list">
-        { this.showUsersList(users).map(user => 
-          <li className="clearfix">
-            <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01.jpg" alt="avatar" />
-            <div className="about">
-              <div className="name">{user.displayName}</div>
-              <div className="status">
-                <i className="fa fa-circle online"></i> online
-              </div>
-            </div>
-          </li>
-          ) }
+      <ul>
+        { this.showUsersList(users).map(user => <li>{ user.displayName }</li>) }
       </ul>
     );
   }

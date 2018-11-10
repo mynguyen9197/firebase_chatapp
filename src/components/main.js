@@ -3,39 +3,42 @@ import { FaSearch, FaFile, FaFileImage } from 'react-icons/fa'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import '../style/main.css'
-import { UserIsAuthenticated } from '../containers/authContainer'
-import { compose } from 'redux'
 import UserList from './UserList';
-import * as firebase from 'firebase'
-import { firebaseConnect, isLoaded, isEmpty } from 'react-redux-firebase'
+import { logOut } from '../actions/authActions'
+import { Redirect } from 'react-router'
+import { firestoreConnect } from 'react-redux-firebase'
+import { compose } from 'redux'
+import * as firebase from 'firebase' 
 
 class Main extends React.Component {
-	constructor(props){
-		super(props)
-		this.state = {
-			time: "",
-			messageOutput: '',
-			response: '',
-			users: []
-		}
-	}
 
 	componentDidMount(){
+		if(!this.props.auth.uid)
+			this.props.history.push('/login')
+	}
+
+	handleLogout(e){
+		e.preventDefault();
+		this.props.logOut()
 	}
 
 	render() {
-		const { dispatch, users } = this.props;
+		const { auth, users, dispatch } = this.props
+		if(!auth.uid)
+			return <Redirect to='/login' />
 		return (
-			<div>
-			{isLoaded(this.props.auth)&&isEmpty(this.props.auth)?this.props.history.push('/login'):
 			<div>
 			<div style={{float: 'right'}}>
 				<div className="clearfix">
-		          <img id="ava" src={this.props.profile.avatarUrl} alt="avatar" />
-		          <div className="about">
-		          {this.props.profile.displayName}
-		          </div>
-
+					<div className="dropdown">
+					  <button className="dropbtn"><img id="ava" src={this.props.auth.photoURL} alt="avatar" /></button>
+					  <div className="dropdown-content">
+					    <a href="#" onClick={this.handleLogout.bind(this)}>Log out</a>
+					  </div>
+					</div>
+			        <div className="about">
+			          {this.props.auth.displayName}
+			        </div>
 		        </div>
 			</div>
 			<div className="container clearfix">
@@ -44,9 +47,12 @@ class Main extends React.Component {
 			        <span><input type="text" placeholder="search" /></span>
 			        <span><FaSearch className="fa-search" /></span>
 			      </div>
-			      
+			      <UserList
+			        dispatch={ dispatch }
+			        users={ users }
+			      />
 			      {/*<ul className="list">
-
+			      	
 			        <li className="clearfix">
 			          <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01.jpg" alt="avatar" />
 			          <div className="about">
@@ -255,17 +261,26 @@ class Main extends React.Component {
 			    </div>
 			  </li>
 			</script>*/}
-		</div>}
 		</div>
 		)
 	}
 }
 
-export default withRouter(compose(
-  firebaseConnect(), // withFirebase can also be used
-  connect(({ firebase }) => ({ 
-  	auth: firebase.auth, 
-  	profile: firebase.profile
-  }))
-)(Main))
-//export default UserIsAuthenticated(Main)
+const mapStateToProps = (state) => {
+	console.log(state)
+	return {
+		auth: state.firebase.auth,
+		users: state.users
+	}
+}
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		logOut: () => dispatch(logOut()),
+	}
+}
+
+export default withRouter(
+	connect(mapStateToProps, mapDispatchToProps)
+	(Main)
+)

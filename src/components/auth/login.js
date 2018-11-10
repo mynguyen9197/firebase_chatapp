@@ -1,36 +1,55 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import { compose } from 'redux'
 import { connect } from 'react-redux'
-import { firebaseConnect, isLoaded, isEmpty } from 'react-redux-firebase'
 import { withRouter } from 'react-router-dom'
 import '../../style/login.css'
 import { FaGoogle, FaTwitter, FaFacebook, FaUserEdit, FaUserLock } from 'react-icons/fa'
-import { UserIsNotAuthenticated } from '../../containers/authContainer'
+import { loginWithEmailPass, loginWithGoogle } from '../../actions/authActions'
+import { Redirect } from 'react-router'
 
 class LoginPage extends React.Component{
 
+  state = {
+    email: '',
+    password: ''
+  }
+
+  handleChange(e){
+    this.setState({
+      [e.target.id]: e.target.value
+    })
+  }
+
+  handleSubmit(e){
+    e.preventDefault();
+    //this.props.loginWithEmailPass(this.state)
+  }
+
+  handleLoginWithGoogle(e){
+    e.preventDefault();
+    this.props.loginWithGoogle()
+  }
+
   componentDidMount(){
-    if(isLoaded(this.props.auth)&&!isEmpty(this.props.auth))
+    if(this.props.auth.uid)
       this.props.history.push('/app')
   }
 
   render(){
+    const { authError, auth } = this.props
+    if(auth.uid)
+      return <Redirect to='/app' />
   	return (
       <div className="container2">
-      {isLoaded(this.props.auth)&&!isEmpty(this.props.auth)?
-          this.props.history.push('/app'):
-      <div>
         <div><h1>Login</h1></div><br /><br />
-        <form className="form" onSubmit={e => { e.preventDefault(); }}>
+        <form className="form" onSubmit={this.handleSubmit}>
           <div >
             <div className="label"><FaUserEdit /> &nbsp; Username</div>
-            <input className="input100" type="text" name="username" placeholder="Type your username"/>
+            <input className="input100" type="text" name="username" placeholder="Type your username" onChange={this.handleChange} />
           </div><br /><br />
 
           <div className="wrap-input100 validate-input" data-validate="Password is required">
             <div className="label"><FaUserLock /> &nbsp; Password</div>
-            <input className="input100" type="password" name="pass" placeholder="Type your password" />
+            <input className="input100" type="password" name="pass" placeholder="Type your password" onChange={this.handleChange} />
           </div><br />
           <div style={{float: 'right'}}>
             <a href="google.com">
@@ -44,6 +63,7 @@ class LoginPage extends React.Component{
                 Login
               </button>
             </div>
+            <div>{ authError?<p>{authError}</p>:null }</div>
           </div><br /><br /><br /><br />
           <div class="txt1 text-center p-t-54 p-b-20">
             <span>
@@ -51,7 +71,7 @@ class LoginPage extends React.Component{
             </span>
           </div><br />
           <div class="flex-c-m">
-            <button class="button" onClick={() => this.props.firebase.login({ provider: 'google', type: 'popup' })}>
+            <button class="button" onClick={this.handleLoginWithGoogle.bind(this)}>
               <FaGoogle />
             </button>
 
@@ -64,21 +84,24 @@ class LoginPage extends React.Component{
             </button>
           </div><br /><br />
           </form>
-    </div>
-  }
-  </div>
+      </div>
     )
   }
 }
 
-LoginPage.propTypes = {
-  firebase: PropTypes.shape({
-    login: PropTypes.func.isRequired
-  }),
-  auth: PropTypes.object
+const mapStateToProps = (state) => {
+  return {
+    auth: state.firebase.auth,
+    authError: state.auth.authError
+  }
 }
 
-export default withRouter(compose(
-  firebaseConnect(), // withFirebase can also be used
-  connect(({ firebase: { auth } }) => ({ auth }))
-)(LoginPage))
+const mapDispatchToProps = (dispatch) => {
+  return {
+    loginWithEmailPass: (creds) => dispatch(loginWithEmailPass(creds)),
+    loginWithGoogle: () => dispatch(loginWithGoogle())
+  }
+}
+
+export default withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(LoginPage))

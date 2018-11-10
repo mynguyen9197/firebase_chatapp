@@ -1,6 +1,6 @@
-const users = (state = {}, action) => {
+export const users = (state = {}, action) => {
   switch(action.type) {
-    case "USER_AUTHED":
+    case 'USER_LOGGED_IN':
       const { uid, userPayload } = action;
 
       return {
@@ -13,5 +13,3 @@ const users = (state = {}, action) => {
       return state;
   }
 };
-
-export default users
