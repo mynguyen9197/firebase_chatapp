@@ -9,7 +9,7 @@ const App = () => (
   <Router>
     <Switch>
     	<Route exact path="/" render={() => (
-		    <Redirect to="/app"/>
+		    <Redirect to="/login"/>
 		)} />
     	<Route path="/app" component={Main} />
     	<Route path="/login" component={LogIn} />

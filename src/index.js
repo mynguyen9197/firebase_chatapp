@@ -15,7 +15,8 @@ const rrfConfig = {
   userProfile: 'users', // firebase root where user profiles are stored
   attachAuthIsReady: true, // attaches auth is ready promise to store
   presence: 'presence', // where list of online users is stored in database
-  sessions: 'sessions' // where list of user sessions is stored in database (presence must be enabled)
+  sessions: 'sessions', // where list of user sessions is stored in database (presence must be enabled)
+  useFirestoreForProfile: true
 }
 
 const store = createStore(rootReducer, 

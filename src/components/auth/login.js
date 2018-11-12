@@ -4,7 +4,7 @@ import { withRouter } from 'react-router-dom'
 import '../../style/login.css'
 import { FaGoogle, FaTwitter, FaFacebook, FaUserEdit, FaUserLock } from 'react-icons/fa'
 import { loginWithEmailPass, loginWithGoogle } from '../../actions/authActions'
-import { Redirect } from 'react-router'
+import * as firebase from 'firebase'
 
 class LoginPage extends React.Component{
 
@@ -30,14 +30,37 @@ class LoginPage extends React.Component{
   }
 
   componentDidMount(){
-    if(this.props.auth.uid)
+    const uid = this.props.auth.uid;
+    if(uid){
+      this.updateOnConnect(uid)
       this.props.history.push('/app')
+    }
+      
+  }
+
+  updateStatus(status){
+    if(!this.props.auth.uid) return;
+    firebase.database().ref('users/' + this.props.auth.uid ).update({ status: status})
+  }
+
+  updateOnConnect(uid){
+    return firebase.database().ref('.info/connected').on('value', snapshot => {
+      let status = snapshot.val() ? 'online' : 'offline'
+      this.updateStatus(status)
+    })
+
+  }
+
+  componentDidUpdate(){
+    const uid = this.props.auth.uid;
+    if(uid){
+      this.updateOnConnect(uid)
+      this.props.history.push('/app')
+    }
   }
 
   render(){
-    const { authError, auth } = this.props
-    if(auth.uid)
-      return <Redirect to='/app' />
+    const { authError } = this.props
   	return (
       <div className="container2">
         <div><h1>Login</h1></div><br /><br />

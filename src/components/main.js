@@ -3,27 +3,40 @@ import { FaSearch, FaFile, FaFileImage } from 'react-icons/fa'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import '../style/main.css'
-import UserList from './UserList';
+import UsersList from './user/UsersList';
 import { logOut } from '../actions/authActions'
 import { Redirect } from 'react-router'
-import { firestoreConnect } from 'react-redux-firebase'
-import { compose } from 'redux'
-import * as firebase from 'firebase' 
+//import { firestoreConnect } from 'react-redux-firebase'
+//import { compose } from 'redux'
+import * as firebase from 'firebase'
+import { addConnectedUser } from '../actions/userActions'
 
 class Main extends React.Component {
 
 	componentDidMount(){
-		if(!this.props.auth.uid)
+		const { auth } = this.props
+		if(!auth.uid)
 			this.props.history.push('/login')
+		else {
+			firebase.database().ref('users').on('child_added', (snapshot) => {
+		    	this.props.addConnectedUser(snapshot.key, snapshot.val())
+		    });
+		}
+	}
+
+	updateStatus(){
+	  if(!this.props.auth.uid) return;
+	    firebase.database().ref('users/' + this.props.auth.uid ).update({ status: 'offline'})
 	}
 
 	handleLogout(e){
 		e.preventDefault();
+		this.updateStatus();
 		this.props.logOut()
 	}
 
 	render() {
-		const { auth, users, dispatch } = this.props
+		const { auth, users } = this.props
 		if(!auth.uid)
 			return <Redirect to='/login' />
 		return (
@@ -31,7 +44,7 @@ class Main extends React.Component {
 			<div style={{float: 'right'}}>
 				<div className="clearfix">
 					<div className="dropdown">
-					  <button className="dropbtn"><img id="ava" src={this.props.auth.photoURL} alt="avatar" /></button>
+					  <button className="dropbtn"><img className="ava" src={this.props.auth.photoURL} alt="avatar" /></button>
 					  <div className="dropdown-content">
 					    <a href="#" onClick={this.handleLogout.bind(this)}>Log out</a>
 					  </div>
@@ -47,112 +60,10 @@ class Main extends React.Component {
 			        <span><input type="text" placeholder="search" /></span>
 			        <span><FaSearch className="fa-search" /></span>
 			      </div>
-			      <UserList
-			        dispatch={ dispatch }
-			        users={ users }
-			      />
-			      {/*<ul className="list">
-			      	
-			        <li className="clearfix">
-			          <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01.jpg" alt="avatar" />
-			          <div className="about">
-			            <div className="name">Vincent Porter</div>
-			            <div className="status">
-			              <i className="fa fa-circle online"></i> online
-			            </div>
-			          </div>
-			        </li>
-			        
-			        <li className="clearfix">
-			          <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_02.jpg" alt="avatar" />
-			          <div className="about">
-			            <div className="name">Aiden Chavez</div>
-			            <div className="status">
-			              <i className="fa fa-circle offline"></i> left 7 mins ago
-			            </div>
-			          </div>
-			        </li>
-			        
-			        <li className="clearfix">
-			          <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_03.jpg" alt="avatar" />
-			          <div className="about">
-			            <div className="name">Mike Thomas</div>
-			            <div className="status">
-			              <i className="fa fa-circle online"></i> online
-			            </div>
-			          </div>
-			        </li>
-			        
-			        <li className="clearfix">
-			          <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_04.jpg" alt="avatar" />
-			          <div className="about">
-			            <div className="name">Erica Hughes</div>
-			            <div className="status">
-			              <i className="fa fa-circle online"></i> online
-			            </div>
-			          </div>
-			        </li>
-			        
-			        <li className="clearfix">
-			          <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_05.jpg" alt="avatar" />
-			          <div className="about">
-			            <div className="name">Ginger Johnston</div>
-			            <div className="status">
-			              <i className="fa fa-circle online"></i> online
-			            </div>
-			          </div>
-			        </li>
-			        
-			        <li className="clearfix">
-			          <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_06.jpg" alt="avatar" />
-			          <div className="about">
-			            <div className="name">Tracy Carpenter</div>
-			            <div className="status">
-			              <i className="fa fa-circle offline"></i> left 30 mins ago
-			            </div>
-			          </div>
-			        </li>
-			        
-			        <li className="clearfix">
-			          <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_07.jpg" alt="avatar" />
-			          <div className="about">
-			            <div className="name">Christian Kelly</div>
-			            <div className="status">
-			              <i className="fa fa-circle offline"></i> left 10 hours ago
-			            </div>
-			          </div>
-			        </li>
-			        
-			        <li className="clearfix">
-			          <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_08.jpg" alt="avatar" />
-			          <div className="about">
-			            <div className="name">Monica Ward</div>
-			            <div className="status">
-			              <i className="fa fa-circle online"></i> online
-			            </div>
-			          </div>
-			        </li>
-			        
-			        <li className="clearfix">
-			          <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_09.jpg" alt="avatar" />
-			          <div className="about">
-			            <div className="name">Dean Henry</div>
-			            <div className="status">
-			              <i className="fa fa-circle offline"></i> offline since Oct 28
-			            </div>
-			          </div>
-			        </li>
-			        
-			        <li className="clearfix">
-			          <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_10.jpg" alt="avatar" />
-			          <div className="about">
-			            <div className="name">Peyton Mckinney</div>
-			            <div className="status">
-			              <i className="fa fa-circle online"></i> online
-			            </div>
-			          </div>
-			        </li>
-			      </ul>*/}
+			      <UsersList
+			        uid={ auth.uid }
+			        users={ users } />
+			      
 			    </div>
 			    
 			    <div className="chat">
@@ -277,6 +188,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
 	return {
 		logOut: () => dispatch(logOut()),
+		addConnectedUser: (uid, userPayload) => dispatch(addConnectedUser({uid, userPayload}))
 	}
 }
 
