@@ -1,5 +1,4 @@
 import React from 'react'
-import { FaSearch } from 'react-icons/fa'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import '../style/main.css'
@@ -78,16 +77,9 @@ class Main extends React.Component {
 		        </div>
 			</div>
 			<div className="container clearfix">
-			    <div className="people-list" id="people-list">
-			      <div className="search">
-			        <span><input type="text" placeholder="search" /></span>
-			        <span><FaSearch className="fa-search" /></span>
-			      </div>
-			      <UsersList
+			    <UsersList
 			        uid={ auth.uid }
 			        users={ users } />
-			      
-			    </div>
 			    
 
 			    <div className="chat">
