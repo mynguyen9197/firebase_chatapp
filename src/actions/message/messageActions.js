@@ -1,3 +1,5 @@
+import * as types from './messageActionTypes'
+
 export const retrieveMessage = ({ uid, displayName, message }) => {
   return {
     type: types.RETRIEVE_MESSAGE,
@@ -27,7 +29,8 @@ export const sendMessageError = () => {
 };
 
 export const sendMessage = (message) => {
-  return (dispatch, getState) => {
+  return (dispatch, getState, { getFirebase }) => {
+    const firebase = getFirebase();
     const { uid } = getState().auth;
     const { displayName } = getState().users[uid];
 

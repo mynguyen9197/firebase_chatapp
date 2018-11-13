@@ -12,6 +12,7 @@ const App = () => (
 		    <Redirect to="/login"/>
 		)} />
     	<Route path="/app" component={Main} />
+    	<Route path="/chat/:uid" component={Main} />
     	<Route path="/login" component={LogIn} />
     </Switch>
   </Router>

@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
-import '../../style/login.css'
+import '../../style/Login.css'
 import { FaGoogle, FaTwitter, FaFacebook, FaUserEdit, FaUserLock } from 'react-icons/fa'
 import { loginWithEmailPass, loginWithGoogle } from '../../actions/authActions'
 import * as firebase from 'firebase'
